@@ -1,5 +1,4 @@
 import "./App.css";
-import Message from "./components/MessageComponent";
 import TicTac from "./components/TicTac";
 import { useState } from "react";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
@@ -78,7 +77,7 @@ const App = () => {
                 <Lobby joinRoom={joinRoom} />
             ) : (
                     roomAvailability ? (
-                        <TicTac connection={connection} userSymbol={userSymbol} makeMove={makeMove} />
+                        <TicTac connection={connection} userSymbol={userSymbol} makeMove={makeMove} closeConnection={ closeConnection} />
                 ) : (
                     <>
                         <div className="alert alert-danger" role="alert">Room is full</div>

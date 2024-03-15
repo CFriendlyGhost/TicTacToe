@@ -1,11 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
-using System;
 using TicTacToe.Server.Hubs;
-using System.Runtime.InteropServices;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace TicTacToe.Server.Controllers
 {
@@ -61,17 +55,26 @@ namespace TicTacToe.Server.Controllers
                     await Clients.Group(userConnection.Room).SendAsync("NextPlayer", nextPlayer);
                 }
 
-                    if (roomConnections.Any())
+                if (roomConnections.Any())
                 {
                     foreach (var connection in roomConnections)
                     {
                         await Clients.Group(connection.Room).SendAsync("UpdateBoard", moveInfo.Board, moveInfo.Player);
                     }
                 }
+
+                if (CheckPattern(moveInfo.Board, moveInfo.Player))
+                {
+                    await Clients.Group(userConnection.Room).SendAsync("GameResult", $"The user with {moveInfo.Player} won the game!");
+                    foreach (var connection in _connections.Where(kv => kv.Value.Room == userConnection.Room).ToList())
+                    {
+                        _connections.Remove(connection.Key);
+                    }
+
+                    return;
+                }
             }
-
         }
-
 
         public Task SendUsersConnected(string room)
         {
@@ -80,6 +83,60 @@ namespace TicTacToe.Server.Controllers
                 .Select(c => c.User);
 
             return Clients.Group(room).SendAsync("UsersInRoom", users, room);
+        }
+
+        public static bool CheckPattern(string[] board, string symbol)
+        {
+            List<List<int>> patterns = new List<List<int>>
+            {
+            new () { 0, 1, 2 },
+            new () { 3, 4, 5 },
+            new () { 6, 7, 8 },
+            new () { 0, 3, 6 },
+            new () { 1, 4, 7 },
+            new () { 2, 5, 8 },
+            new () { 0, 4, 8 },
+            new () { 2, 4, 6 }
+            };
+
+            var choosenIndexes = new List<int>();
+
+            for (int i = 0; i < board.Length; i++)
+            {
+                if (board[i] == symbol)
+                {
+                    choosenIndexes.Add(i);
+                }
+            }
+
+
+            foreach (var pattern in patterns)
+            {
+                var i = 0;
+                var j = 0;
+                while (j < choosenIndexes.Count)
+                {
+                    if (choosenIndexes[j] == pattern[i])
+                    {
+                        i++;
+                        j++;
+                        if (i == pattern.Count)
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        if (i > 0)
+                        {
+                            i = 0;
+                        }
+                        j++;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }
