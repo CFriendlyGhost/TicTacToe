@@ -4,9 +4,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <SpaProxyServerUrl>https://localhost:5233</SpaProxyServerUrl>
     <UserSecretsId>aafa5428-5704-4aca-a9e6-6ea046015a5a</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>.</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
