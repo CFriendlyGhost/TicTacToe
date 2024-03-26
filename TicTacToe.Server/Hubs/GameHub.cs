@@ -3,13 +3,13 @@ using TicTacToe.Server.Hubs;
 
 namespace TicTacToe.Server.Controllers
 {
-    public class ChatHub : Hub
+    public class GameHub : Hub
     {
 
         private readonly string _botUser;
         private readonly IDictionary<string, UserConnection> _connections;
 
-        public ChatHub(IDictionary<string, UserConnection> connections)
+        public GameHub(IDictionary<string, UserConnection> connections)
         {
             _botUser = "MyChat Bot";
             _connections = connections;

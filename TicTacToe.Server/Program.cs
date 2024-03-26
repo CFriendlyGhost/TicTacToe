@@ -12,15 +12,24 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(builder =>
-    {
-        builder.WithOrigins("https://localhost:5173")
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials();
-    }
-    );
+    options.AddPolicy(name: "AllowSpecificOrigin",
+        builder =>
+        {
+            builder.WithOrigins(
+            	"http://localhost:5500", 
+            	"http://127.0.0.1:5500", 
+            	"http://localhost:8081", 
+            	"http://127.0.0.1:8081",
+            	"http://localhost:8080",
+            	"http://127.0.0.1:8080",
+                "http://127.0.0.1:5173",
+                "http://localhost:5173")
+                   .AllowAnyMethod()
+                   .AllowAnyHeader()
+                   .AllowCredentials();
+        });
 });
+
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -51,15 +60,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors();
 
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.UseCors("AllowSpecificOrigin");
 app.MapFallbackToFile("/index.html");
 app.UseRouting();
-app.MapHub<ChatHub>("/tictac");
+app.MapHub<GameHub>("/tictac");
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();

@@ -1,0 +1,11 @@
+version: '3.3'
+services:
+  backend:
+    image: tictac
+    ports:
+      - "8080:8080"
+
+  frontend:
+    image: tictac-front
+    ports:
+      - "5173:5173"
