@@ -1,7 +1,7 @@
 version: '3.3'
 services:
   backend:
-    image: tictac
+    image: tictac2
     ports:
       - "8080:8080"
 
