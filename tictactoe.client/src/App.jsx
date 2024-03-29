@@ -21,7 +21,7 @@ const App = () => {
 
       const connection = new HubConnectionBuilder()
         .configureLogging(LogLevel.Debug)
-        .withUrl("http://localhost:8080/tictac")
+        .withUrl(import.meta.env.VITE_REACT_API_URL)
         .build();
 
       connection.on("ReceiveMove", (user, message) => {
@@ -71,7 +71,7 @@ const App = () => {
 
   return (
     <div className="app">
-      <h2>Tic Tac Toe</h2>
+      <h2>Tic Tac Toe </h2>
       <hr className="line" />
       {!connection ? (
         <Lobby joinRoom={joinRoom} />

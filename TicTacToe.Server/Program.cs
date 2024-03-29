@@ -2,6 +2,8 @@ using Microsoft.OpenApi.Models;
 using TicTacToe.Server.Controllers;
 using TicTacToe.Server.Hubs;
 
+var front_url = Environment.GetEnvironmentVariable("INSTANCE_URL");
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -16,14 +18,7 @@ builder.Services.AddCors(options =>
         builder =>
         {
             builder.WithOrigins(
-            	"http://localhost:5500", 
-            	"http://127.0.0.1:5500", 
-            	"http://localhost:8081", 
-            	"http://127.0.0.1:8081",
-            	"http://localhost:8080",
-            	"http://127.0.0.1:8080",
-                "http://127.0.0.1:5173",
-                "http://localhost:5173")
+                $"{front_url}:5173")
                    .AllowAnyMethod()
                    .AllowAnyHeader()
                    .AllowCredentials();
