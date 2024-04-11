@@ -1,0 +1,16 @@
+version: '3.3'
+services:
+  backend:
+    image: tictac
+    environment:
+      - INSTANCE_URL=http://54.227.106.29
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: .
+      args:
+          API_KEY: http://54.227.106.29:8080/tictac
+    ports:
+      - "5173:5173"
