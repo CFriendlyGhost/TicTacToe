@@ -1,11 +1,16 @@
 using Microsoft.OpenApi.Models;
 using TicTacToe.Server.Controllers;
 using TicTacToe.Server.Hubs;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using TicTacToe.Server;
+using System.Security.Claims;
 
-var front_url = Environment.GetEnvironmentVariable("INSTANCE_URL");
+/*var front_url = Environment.GetEnvironmentVariable("INSTANCE_URL");*/
+var front_url = "http://localhost:5173";
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IDictionary<string, UserConnection>>(options => new Dictionary<string, UserConnection>());
 
@@ -18,13 +23,19 @@ builder.Services.AddCors(options =>
         builder =>
         {
             builder.WithOrigins(
-                $"{front_url}:5173")
+                $"{front_url}")
                    .AllowAnyMethod()
                    .AllowAnyHeader()
                    .AllowCredentials();
         });
 });
 
+builder.Services.AddAuthorization();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer();
+
+builder.Services.ConfigureOptions<JwtBearerConfigureOptions>();
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -38,34 +49,46 @@ var app = builder.Build();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
-        // Explicitly specify the Swagger JSON endpoint for the SignalR hub
         c.SwaggerEndpoint("/tictac/swagger", "SignalR Hub V1");
     });
 }
 
-
-
 app.UseHttpsRedirection();
+app.MapHealthChecks("/health");
 
 
-app.UseAuthorization();
+app.MapGet("/env", async context =>
+{
+    await context.Response.WriteAsync($"Frontend URL: {front_url}");
+}).RequireAuthorization();
+
+app.MapGet("/claims", (ClaimsPrincipal claims) => claims.Claims.Select(c => new { c.Type, c.Value }).ToArray())
+    .RequireAuthorization()
+    .WithName("GetClaims")
+    .WithOpenApi();
 
 app.MapControllers();
-app.UseCors("AllowSpecificOrigin");
+
 app.MapFallbackToFile("/index.html");
 app.UseRouting();
-app.MapHub<GameHub>("/tictac");
+
+app.UseCors("AllowSpecificOrigin");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapHub<GameHub>("/tictac").RequireAuthorization();
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapControllers();
+    _ = endpoints.MapControllers();
 });
+
+
 
 app.Run();

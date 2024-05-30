@@ -3,7 +3,7 @@ services:
   backend:
     image: tictac
     environment:
-      - INSTANCE_URL=http://54.227.106.29
+      - INSTANCE_URL=http://my-environment.eba-wex99uwr.us-east-1.elasticbeanstalk.com
     ports:
       - "8080:8080"
 
@@ -11,6 +11,6 @@ services:
     build:
       context: .
       args:
-          API_KEY: http://54.227.106.29:8080/tictac
+          API_KEY: http://52.5.114.86:8080/tictac
     ports:
       - "5173:5173"

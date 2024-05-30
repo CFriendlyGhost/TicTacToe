@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.SignalR;
 using TicTacToe.Server.Hubs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TicTacToe.Server.Controllers
 {
+    [Authorize]
     public class GameHub : Hub
     {
 

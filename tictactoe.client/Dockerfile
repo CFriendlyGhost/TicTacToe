@@ -1,4 +1,5 @@
 FROM node:18-alpine
+ARG API_KEY
 
 WORKDIR /app
 
@@ -8,8 +9,9 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 80
+EXPOSE 5173
 
-RUN npm run build
+RUN VITE_REACT_API_URL=${API_KEY} \
+    npm run build
 
 CMD [ "npm", "run", "preview" ]
